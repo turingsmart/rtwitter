@@ -28,6 +28,40 @@ public class DbRepositoryService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public String changeFollowingStatus(String follower, String followed){
+        String isFollowed = jdbcTemplate.queryForObject("select count(*) from following where follower = ? and followed = ?",
+                new Object[]{follower,followed}, String.class);
+
+        if(Integer.parseInt(isFollowed) == 1)
+        {
+            jdbcTemplate.update("Delete from following where follower = ? and followed = ?" , new Object[]{follower,followed});
+            return follower+" has un-followed "+followed;
+        }
+        else
+        {
+            jdbcTemplate.update("insert into following (follower, followed) values(?,?)", new Object[]{follower,followed});
+        }
+        return follower+" has followed "+followed;
+    }
+
+    public List<Tweet> fetchTimeLine(String userName)
+    {
+        return  jdbcTemplate.query("select tweet.timestamp as ts, tweet.username as username, tweet.tweettext as tweet " +
+                "from tweet join following ON following.follower=? and following.followed=tweet.username",
+                new Object[]{userName},
+                new RowMapper<Tweet>() {
+                    @Override
+                    public Tweet mapRow(ResultSet resultSet, int i) throws SQLException {
+                        Tweet t = new Tweet();
+                        t.setUsername(resultSet.getString("username"));
+                        t.setTweettext(resultSet.getString("tweet"));
+                        t.setTimestamp(resultSet.getString("ts"));
+
+                        return t;
+                    }
+                });
+    }
+
     public Users fetchUser(String username) {
         return jdbcTemplate.queryForObject("select * from users where username = ?",
                 new Object[]{username}, new BeanPropertyRowMapper<Users>(Users.class));
@@ -49,20 +83,13 @@ public class DbRepositoryService {
         });
     }
 
-
-
-    public List<String> findFollowingList(String userName)
+    public List<String> findFollowedList(String userName)
     {
-        //System.out.println(userName);
-        return  jdbcTemplate.query("select Followed from following where Follower = ?",
+        return  jdbcTemplate.query("select followed from following where follower = ?",
                 new Object[]{userName}, new RowMapper<String>() {
             @Override
             public String mapRow(ResultSet resultSet, int i) throws SQLException {
-                Users user=new Users();
-                String s=resultSet.getString("Followed");
-                //System.out.println(s);
-              //  user.setUsername(s);
-                return s;
+                return resultSet.getString("followed");
             }
         });
     }
@@ -70,17 +97,35 @@ public class DbRepositoryService {
 
     public List<String> findFollowersList(String userName)
     {
-        //System.out.println(userName);
-        return  jdbcTemplate.query("select Follower from following where Followed = ?",
+        return  jdbcTemplate.query("select follower from following where followed = ?",
                 new Object[]{userName}, new RowMapper<String>() {
             @Override
             public String mapRow(ResultSet resultSet, int i) throws SQLException {
-                Users user=new Users();
-                String s=resultSet.getString("Follower");
-                //System.out.println(s);
-                //  user.setUsername(s);
-                return s;
+                return resultSet.getString("follower");
             }
         });
+    }
+
+    //Kartik
+    public int findRelation(String firstUser,String secondUser )
+    {
+        int result=0;
+
+        if(jdbcTemplate.queryForObject("select count(*) from following where followed=? and follower=?",new Object[]{firstUser,secondUser},Integer.class)==1)
+        {
+            //following -so display unfollow button
+            result=1;
+        }
+        else result=2;
+
+
+        return result;
+
+    }
+
+    public void postTweet(Tweet tweet)
+    {
+        jdbcTemplate.update("insert into tweet(tweettext,username) values(?,?)",tweet.getTweettext(),tweet.getUsername());
+        System.out.println("posted \n"+tweet);
     }
 }

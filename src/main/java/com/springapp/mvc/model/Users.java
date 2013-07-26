@@ -1,6 +1,10 @@
 package com.springapp.mvc.model;
 
 import com.sun.istack.internal.NotNull;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.Size;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,19 +16,18 @@ import com.sun.istack.internal.NotNull;
 
 public class Users {
 
-    @NotNull
+    @Size(min=6, max=32)
     private String username;
 
-    @NotNull
+    @Size(min=6, max=32)
     private String name;
 
     @NotNull
     private String password;
 
-    @NotNull
+    @NotEmpty @Email
     private String email;
 
-    @NotNull
     private String dateofjoining;
 
     public String getUsername() {

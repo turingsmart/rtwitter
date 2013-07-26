@@ -17,7 +17,7 @@
 <table>
     <c:forEach items="${list}" var="item">
         <tr>
-            <td><a href="http://localhost:8080/${item}"><c:out value="${item}" /></a></td>
+            <td><a href="/${item}/timeline"><c:out value="${item}" /></a></td>
         </tr>
     </c:forEach>
 </table>

@@ -1,28 +1,21 @@
 package com.springapp.mvc.web;
 
 import com.google.gson.Gson;
-import com.springapp.mvc.model.Users;
 import com.springapp.mvc.service.DbRepositoryService;
 import com.springapp.mvc.model.Tweet;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Controller
 @RequestMapping("/")
 public class InSessionController {
-
-	@RequestMapping(method = RequestMethod.GET)
-	public String printWelcome(ModelMap model) {
-		model.addAttribute("message", "Hello world!");
-		return "hello";
-	}
 
     private final DbRepositoryService dbRepositoryService;
 
@@ -31,21 +24,37 @@ public class InSessionController {
         this.dbRepositoryService = dbRepositoryService;
     }
 
-    @RequestMapping(value = "/{username}", method = RequestMethod.GET)
-    public String fetchUsersTweets(@PathVariable("username") String username, ModelMap modelMap) {
-        List<Tweet> tweets= dbRepositoryService.fetchUsersTweets(username);
+    @RequestMapping(value = "/home", method = RequestMethod.GET)
+    public String printHomePage(ModelMap model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String name = authentication.getName();
+        model.addAttribute("message", "Hello "+name);
 
-        modelMap.addAttribute("list", tweets);
-        modelMap.addAttribute("username", username);
+        List<Tweet> tweets= dbRepositoryService.fetchTimeLine(name);
+        model.addAttribute("list",tweets);
 
+        return "homepage";
+    }
 
-        for(Tweet t:tweets){
-            //System.out.println(t.getTweetid());
+    @RequestMapping(value = "/{username}/timeline", method = RequestMethod.GET)
+    public String printTimelineOfAnyUser(@PathVariable("username") String username, ModelMap model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String name = authentication.getName();
+         model.addAttribute("loggedInUser",name);
+        if(name.compareTo(username)==0)
+        {
+            model.addAttribute("message", "Hello. Welcome to your profile"+name);
+            model.addAttribute("result",0);
+        }
+        else{
+            model.addAttribute("message", "Hello "+name+". Welcome to"+username+" profile!!!");
+            model.addAttribute("result",dbRepositoryService.findRelation(username, name));
         }
 
-        String jsonString = new Gson().toJson(tweets);
-        System.out.println(jsonString);
-        return "showTweets";
+        List<Tweet> tweets= dbRepositoryService.fetchUsersTweets(username);
+        model.addAttribute("list", tweets);
+
+        return "showTimeline";
     }
 
     @RequestMapping(value = "/{username}/newTweets", method = RequestMethod.GET)
@@ -55,39 +64,58 @@ public class InSessionController {
 
         modelMap.addAttribute("list", tweets);
         modelMap.addAttribute("username", username);
-
-
-
         String jsonString = new Gson().toJson(tweets);
-       // System.out.println(jsonString);
         return jsonString;
     }
 
 
-    @RequestMapping(value = "/{username}/Following", method = RequestMethod.GET)
-   // @ResponseBody
+    @RequestMapping(value = "/{username}/following", method = RequestMethod.GET)
     public String fetchFollowingList(@PathVariable("username") String username, ModelMap modelMap) {
-        List<String> users= dbRepositoryService.findFollowingList(username);
-
-        for(String s:users)
-        System.out.println(s);
+        List<String> users= dbRepositoryService.findFollowedList(username);
         modelMap.addAttribute("list", users);
         modelMap.addAttribute("username", username);
         return "following";
     }
 
 
-    @RequestMapping(value = "/{username}/Followers", method = RequestMethod.GET)
-    // @ResponseBody
+    @RequestMapping(value = "/{username}/followers", method = RequestMethod.GET)
     public String fetchFollowersList(@PathVariable("username") String username, ModelMap modelMap) {
         List<String> users= dbRepositoryService.findFollowersList(username);
-
-        for(String s:users)
-            System.out.println(s);
         modelMap.addAttribute("list", users);
         modelMap.addAttribute("username", username);
         return "followers";
     }
 
+    @RequestMapping(value = "/{username}/changeFollowingStatus", method = RequestMethod.GET)
+    @ResponseBody
+    public String changeFollowingStatus(@PathVariable("username") String username){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String name = authentication.getName();
 
+        System.out.println("reaching here");
+        String s = dbRepositoryService.changeFollowingStatus(name, username);
+        System.out.println(s);
+        return s;
+    }
+
+    //Kartik posting tweets
+    @RequestMapping(value="/{username}/timeline",method = RequestMethod.POST)
+    @ResponseBody
+    public  void postTweet(@ModelAttribute("tweet") Tweet tweet, BindingResult result)
+    {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+        tweet.setUsername(userName);
+        dbRepositoryService.postTweet(tweet);
+    }
+
+    @RequestMapping(value="/home",method = RequestMethod.POST)
+    @ResponseBody
+    public  void postTweetHome(@ModelAttribute("tweet") Tweet tweet, BindingResult result)
+    {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+        tweet.setUsername(userName);
+        dbRepositoryService.postTweet(tweet);
+    }
 }

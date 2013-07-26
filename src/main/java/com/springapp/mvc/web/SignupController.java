@@ -6,6 +6,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  * Created with IntelliJ IDEA.
  * Users: maverick
@@ -25,8 +27,11 @@ public class SignupController {
     }
 
     @RequestMapping(value = "signup", method = RequestMethod.POST)
-    public String submitForm(@ModelAttribute("users") Users users, BindingResult result, Model m){
-        System.out.println(users.getName());
+    public String submitForm(@Valid @ModelAttribute("users") Users users, BindingResult result, Model m){
+        if(result.hasErrors())
+            return "signup";
+
+        m.addAttribute("message", "added user successfully");
         return "signup";
     }
 }

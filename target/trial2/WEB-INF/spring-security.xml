@@ -14,7 +14,12 @@
         <security:intercept-url pattern="/signup" access="permitAll"/>
 		<security:intercept-url pattern="/users" access="permitAll"/>
         <security:intercept-url pattern="/favicon.ico" access="permitAll"/>
-		<security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+        <security:intercept-url pattern="/*/timeline" access="permitAll"/>
+        <security:intercept-url pattern="/static/**" access="permitAll"/>
+
+        <!--Change this line so that it is not a role based security model-->
+		<!--<security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>-->
+        <security:intercept-url pattern="/**" access="isAuthenticated()"/>
 		
 		<security:form-login
 				login-page="/auth/login"

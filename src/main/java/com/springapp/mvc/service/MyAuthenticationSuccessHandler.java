@@ -19,9 +19,6 @@ import java.io.IOException;
 @Component
 public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-    //@Autowired
-    //private UserService userService;
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
@@ -29,7 +26,7 @@ public class MyAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucce
         // changeLastLoginTime(username)
         //userService.changeLastLoginTime(authentication.getName());
 
-        setDefaultTargetUrl("/hello");
+        setDefaultTargetUrl("/home");
         super.onAuthenticationSuccess(request, response, authentication);
     }
 }
