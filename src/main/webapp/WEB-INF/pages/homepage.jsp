@@ -39,33 +39,39 @@
 <html>
 <head>
     <%--Maverick--%>
-    <script type="text/javascript"
-    src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-    <script type="text/javascript">
-    function refreshTweetsAjax() {
-        var tweetUrl = "${username}";
-        var ext = "/newTweets"
-        $.ajax({
-            url: tweetUrl.concat(ext),
-            success:function(data){
-                var length = data.length;
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/homepageFunctions.js"></script>
+    <script type="text/javascript">$(document).ready(function(){console.log( "ready!" );refreshTweetsAjax("${username}");});</script>
+    <%--<script type="text/javascript"--%>
+    <%--src="http://code.jquery.com/jquery-1.10.1.min.js"></script>--%>
 
-                    $('#tweetBox').empty();
-                    for(var i=0; i < data.length; i++){
-                        $('#tweetBox').append(
-                                $('<div>').addClass('well')
-                                        .append($('<div>').addClass("pull-left").append($('<a>').text(data[i].username).attr("href","/"+data[i].username+"/timeline")))
-                                        .append($('<div>').addClass("pull-left").text(data[i].tweettext))
-                        );
-                    }
-            }
-        });
-    }
-    </script>
+    <%--<script type="text/javascript">$(document).ready(function(){console.log( "ready!" );refreshTweetsAjax();});</script>--%>
 
-    <script type="text/javascript">
-    intervalId = setInterval(refreshTweetsAjax, 3000);
-    </script>
+    <%--<script type="text/javascript">--%>
+    <%--function refreshTweetsAjax() {--%>
+        <%--var tweetUrl = "${username}";--%>
+        <%--var ext = "/newTweets"--%>
+        <%--$.ajax({--%>
+            <%--url: tweetUrl.concat(ext),--%>
+            <%--success:function(data){--%>
+                <%--var length = data.length;--%>
+
+                    <%--$('#tweetBox').empty();--%>
+                    <%--for(var i=0; i < data.length; i++){--%>
+                        <%--$('#tweetBox').append(--%>
+                                <%--$('<div>').addClass('well')--%>
+                                        <%--.append($('<div>').addClass("pull-left").append($('<a>').text(data[i].username).attr("href","/"+data[i].username+"/timeline")))--%>
+                                        <%--.append($('<div>').addClass("pull-center").text(data[i].tweettext))--%>
+                        <%--);--%>
+                    <%--}--%>
+            <%--}--%>
+        <%--});--%>
+    <%--}--%>
+    <%--</script>--%>
+
+    <%--<script type="text/javascript">--%>
+    <%--intervalId = setInterval(refreshTweetsAjax, 10000);--%>
+    <%--</script>--%>
     <%--End Maverick--%>
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
