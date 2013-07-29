@@ -29,6 +29,7 @@ public class InSessionController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String name = authentication.getName();
         model.addAttribute("message", "Hello "+name);
+        model.addAttribute("username",name);
 
         List<Tweet> tweets= dbRepositoryService.fetchTimeLine(name);
         model.addAttribute("list",tweets);
@@ -57,14 +58,15 @@ public class InSessionController {
         return "showTimeline";
     }
 
-    @RequestMapping(value = "/{username}/newTweets", method = RequestMethod.GET)
+    @RequestMapping(value = "/{username}/newTweets", method = RequestMethod.GET, produces="application/json")
     @ResponseBody
     public String fetchNewUsersTweets(@PathVariable("username") String username, ModelMap modelMap) {
-        List<Tweet> tweets= dbRepositoryService.fetchUsersTweets(username);
+        List<Tweet> tweets= dbRepositoryService.fetchTimeLine(username);
 
         modelMap.addAttribute("list", tweets);
         modelMap.addAttribute("username", username);
         String jsonString = new Gson().toJson(tweets);
+        //System.out.print(jsonString);
         return jsonString;
     }
 
