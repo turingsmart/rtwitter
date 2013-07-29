@@ -31,7 +31,7 @@ public class InSessionController {
         model.addAttribute("message", "Hello "+name);
         model.addAttribute("username",name);
 
-        List<Tweet> tweets= dbRepositoryService.fetchTimeLine(name);
+        List<Tweet> tweets= dbRepositoryService.fetchTimeLine(name,0);
         model.addAttribute("list",tweets);
 
         return "homepage";
@@ -58,10 +58,10 @@ public class InSessionController {
         return "showTimeline";
     }
 
-    @RequestMapping(value = "/{username}/newTweets", method = RequestMethod.GET, produces="application/json")
+    @RequestMapping(value = "/{username}/newTweets", method = RequestMethod.POST, produces="application/json")
     @ResponseBody
-    public String fetchNewUsersTweets(@PathVariable("username") String username, ModelMap modelMap) {
-        List<Tweet> tweets= dbRepositoryService.fetchTimeLine(username);
+    public String fetchNewUsersTweets(@PathVariable("username") String username, @RequestParam("tweetSeen") String tweetSeen, ModelMap modelMap) {
+        List<Tweet> tweets= dbRepositoryService.fetchTimeLine(username, Integer.parseInt(tweetSeen));
 
         modelMap.addAttribute("list", tweets);
         modelMap.addAttribute("username", username);

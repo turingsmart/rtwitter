@@ -44,10 +44,13 @@ public class DbRepositoryService {
         return follower+" has followed "+followed;
     }
 
-    public List<Tweet> fetchTimeLine(String userName)
+    public List<Tweet> fetchTimeLine(String userName, int tweetSeen)
     {
+        int tweetLowerLimit = tweetSeen *10;
+        int tweetUpperLimit = tweetLowerLimit + 10;
+
         return  jdbcTemplate.query("select tweet.timestamp as ts, tweet.username as username, tweet.tweettext as tweet " +
-                "from tweet join following ON following.follower=? and following.followed=tweet.username",
+                "from tweet join following ON following.follower=? and following.followed=tweet.username ORDER BY ts DESC LIMIT "+tweetUpperLimit+" OFFSET "+tweetLowerLimit,
                 new Object[]{userName},
                 new RowMapper<Tweet>() {
                     @Override
