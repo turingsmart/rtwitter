@@ -70,6 +70,13 @@ public class InSessionController {
         return jsonString;
     }
 
+    @RequestMapping(value = "/{username}/areThereNewTweets", method = RequestMethod.POST)
+    @ResponseBody
+    public String findIfThereAreNewTweets(@PathVariable("username") String username, @RequestParam("firstTweetOnPage") String firstTweetOnPage){
+        return dbRepositoryService.findIfThereAreNewTweets(username, firstTweetOnPage);
+    }
+
+
 
     @RequestMapping(value = "/{username}/following", method = RequestMethod.GET)
     public String fetchFollowingList(@PathVariable("username") String username, ModelMap modelMap) {
@@ -120,4 +127,5 @@ public class InSessionController {
         tweet.setUsername(userName);
         dbRepositoryService.postTweet(tweet);
     }
+
 }

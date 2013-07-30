@@ -38,10 +38,56 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="/static/css/bootstrap.css" rel="stylesheet" type="text/css" >
+    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet" type="text/css">
+    <%--<script src="http://code.jquery.com/jquery.js"></script>--%>
+    <script src="/static/js/bootstrap.min.js"></script>
+
     <%--Maverick--%>
     <script src="/static/js/jquery.js"></script>
+    <%--<script src="jquery-1.7.2.min.js"></script>--%>
+    <!-- noty -->
+    <script type="text/javascript" src="/static/js/noty/jquery.noty.js"></script>
+
+    <!-- layouts -->
+    <script type="text/javascript" src="/static/js/noty/layouts/bottom.js"></script>
+    <script type="text/javascript" src="/static/js/noty/layouts/bottomCenter.js"></script>
+    <script type="text/javascript" src="/static/js/noty/layouts/bottomLeft.js"></script>
+    <script type="text/javascript" src="/static/js/noty/layouts/bottomRight.js"></script>
+    <script type="text/javascript" src="/static/js/noty/layouts/center.js"></script>
+    <script type="text/javascript" src="/static/js/noty/layouts/centerLeft.js"></script>
+    <script type="text/javascript" src="/static/js/noty/layouts/centerRight.js"></script>
+    <script type="text/javascript" src="/static/js/noty/layouts/inline.js"></script>
+    <script type="text/javascript" src="/static/js/noty/layouts/top.js"></script>
+    <script type="text/javascript" src="/static/js/noty/layouts/topCenter.js"></script>
+    <script type="text/javascript" src="/static/js/noty/layouts/topLeft.js"></script>
+    <script type="text/javascript" src="/static/js/noty/layouts/topRight.js"></script>
+
+    <!-- themes -->
+    <script type="text/javascript" src="/static/js/noty/themes/default.js"></script>
+
     <script src="/static/js/homepageFunctions.js"></script>
-    <script type="text/javascript">$(document).ready(function(){console.log( "ready!" );refreshTweetsAjax("${username}");});</script>
+    <%--<script type="text/javascript">$(document).ready(function(){console.log( "ready!" );refreshTweetsAjax("${username}");});</script>--%>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            console.log( "ready!" );
+            refreshTweetsAjax("${username}");
+
+
+
+//            setTimeout(function() {
+//                $.noty.setType(information.options.id, 'warning'); // same as information.setType('warning')
+//            }, 5000);
+//
+//            setTimeout(function() {
+//                $.noty.setText(information.options.id, 'I\'m closing too. Goodbye!'); // same as information.setType('warning')
+//            }, 9000);
+
+        });
+    </script>
     <%--<script type="text/javascript"--%>
     <%--src="http://code.jquery.com/jquery-1.10.1.min.js"></script>--%>
 
@@ -74,11 +120,7 @@
     <%--</script>--%>
     <%--End Maverick--%>
 
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link href="/static/css/bootstrap.css" rel="stylesheet" type="text/css" >
-    <link href="/static/css/bootstrap-responsive.css" rel="stylesheet" type="text/css">
-    <script src="http://code.jquery.com/jquery.js"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
+
     <script type="text/javascript"> $('tweettext').autoResize();       </script>
     <title>${username}</title>
     <style type="text/css">

@@ -49,7 +49,7 @@ public class DbRepositoryService {
         int tweetLowerLimit = tweetSeen *10;
         int tweetUpperLimit = tweetLowerLimit + 10;
 
-        return  jdbcTemplate.query("select tweet.timestamp as ts, tweet.username as username, tweet.tweettext as tweet " +
+        return  jdbcTemplate.query("select tweet.timestamp as ts, tweet.username as username, tweet.tweettext as tweet, tweet.tweetid as ti " +
                 "from tweet join following ON following.follower=? and following.followed=tweet.username ORDER BY ts DESC LIMIT "+tweetUpperLimit+" OFFSET "+tweetLowerLimit,
                 new Object[]{userName},
                 new RowMapper<Tweet>() {
@@ -59,7 +59,7 @@ public class DbRepositoryService {
                         t.setUsername(resultSet.getString("username"));
                         t.setTweettext(resultSet.getString("tweet"));
                         t.setTimestamp(resultSet.getString("ts"));
-
+                        t.setTweetid(resultSet.getInt("ti"));
                         return t;
                     }
                 });
@@ -108,6 +108,22 @@ public class DbRepositoryService {
             }
         });
     }
+
+    public String findIfThereAreNewTweets(String userName, String firstTweetOnPage){
+        Tweet t = jdbcTemplate.queryForObject("select tweet.timestamp as timestamp, tweet.username as username, tweet.tweettext as tweettext, tweet.tweetid as tweetid " +
+                "from tweet join following ON following.follower=? and following.followed=tweet.username ORDER BY timestamp DESC LIMIT 1",
+                new Object[]{userName}, new BeanPropertyRowMapper<Tweet>(Tweet.class));
+        System.out.println(jdbcTemplate.queryForObject("select tweet.timestamp as timestamp, tweet.username as username, tweet.tweettext as tweettext, tweet.tweetid as tweetid " +
+                "from tweet join following ON following.follower=? and following.followed=tweet.username ORDER BY timestamp DESC LIMIT 1",
+                new Object[]{userName}, new BeanPropertyRowMapper<Tweet>(Tweet.class)));
+        System.out.println("Tweet User"+userName);
+        System.out.println("Tweet Fetched"+t.getTweetid());
+        System.out.println("Tweet on Page" + firstTweetOnPage);
+        if (t.getTweetid() == Integer.parseInt(firstTweetOnPage))
+            return "0";
+        return "1";
+    }
+
 
     //Kartik
     public int findRelation(String firstUser,String secondUser )

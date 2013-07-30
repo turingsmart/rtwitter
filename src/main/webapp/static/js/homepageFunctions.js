@@ -7,6 +7,7 @@
  */
 var tweetSeen = 0;
 var userLoggedIn;
+var firstTweetOnPage;
 function refreshTweetsAjax(tweetUrl) {
     userLoggedIn = tweetUrl;
 //    var tweetUrl = "${username}";
@@ -17,6 +18,8 @@ function refreshTweetsAjax(tweetUrl) {
         data : "tweetSeen="+tweetSeen,
         success:function(data){
             var length = data.length;
+            firstTweetOnPage = data[0].tweetid;
+            console.log("first tweet Id"+firstTweetOnPage);
 
             $('#tweetBox').empty();
             for(var i=0; i < data.length; i++){
@@ -29,6 +32,23 @@ function refreshTweetsAjax(tweetUrl) {
         }
     });
 }
+
+function areThereNewtweets(){
+    var ext = "/areThereNewTweets"
+    $.ajax({
+        url: userLoggedIn.concat(ext),
+        type: "POST",
+        data : "firstTweetOnPage="+firstTweetOnPage,
+        success:function(data){
+            if(data==1){
+                var information = generate('information');
+                $.noty.setText(information.options.id, 'New Tweets Dude');
+            }
+        }
+    });
+}
+
+intervalId = setInterval(areThereNewtweets, 5000);
 
 function loadMore()
 {
@@ -62,5 +82,27 @@ function bindScroll(){
 $(window).scroll(bindScroll);
 
 //intervalId = setInterval(refreshTweetsAjax, 10000);
+
+
+function generate(type) {
+    var n = noty({
+        text: type,
+        type: type,
+        dismissQueue: false,
+        layout: 'topCenter',
+        theme: 'defaultTheme',
+//        timeout: 3000,
+//        maxVisible :3,
+        callback:{
+//            afterShow : function(){setTimeout(function(){$.noty.closeAll();},3000)},
+            onClose : function(){window.location.reload(true)}
+        }
+    });
+    console.log(type + ' - ' + n.options.id);
+    return n;
+}
+
+
+
 
 
