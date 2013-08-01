@@ -20,6 +20,8 @@ public class Following {
     @NotNull
     private String latesttimeoffollowing;
 
+    private String latesttimeofunfollowing;
+
     public String getLatesttimeoffollowing() {
         return latesttimeoffollowing;
     }
@@ -44,4 +46,11 @@ public class Following {
         this.follower = follower;
     }
 
+    public String getLatesttimeofunfollowing() {
+        return latesttimeofunfollowing;
+    }
+
+    public void setLatesttimeofunfollowing(String latesttimeofunfollowing) {
+        this.latesttimeofunfollowing = latesttimeofunfollowing;
+    }
 }

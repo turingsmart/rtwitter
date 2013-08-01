@@ -86,28 +86,28 @@ public class DbRepositoryService {
         });
     }
 
-    public List<String> findFollowedList(String userName)
-    {
-        return  jdbcTemplate.query("select followed from following where follower = ?",
-                new Object[]{userName}, new RowMapper<String>() {
-            @Override
-            public String mapRow(ResultSet resultSet, int i) throws SQLException {
-                return resultSet.getString("followed");
-            }
-        });
-    }
-
-
-    public List<String> findFollowersList(String userName)
-    {
-        return  jdbcTemplate.query("select follower from following where followed = ?",
-                new Object[]{userName}, new RowMapper<String>() {
-            @Override
-            public String mapRow(ResultSet resultSet, int i) throws SQLException {
-                return resultSet.getString("follower");
-            }
-        });
-    }
+//    public List<String> findFollowedList(String userName)
+//    {
+//        return  jdbcTemplate.query("select followed from following where follower = ?",
+//                new Object[]{userName}, new RowMapper<String>() {
+//            @Override
+//            public String mapRow(ResultSet resultSet, int i) throws SQLException {
+//                return resultSet.getString("followed");
+//            }
+//        });
+//    }
+//
+//
+//    public List<String> findFollowersList(String userName)
+//    {
+//        return  jdbcTemplate.query("select follower from following where followed = ?",
+//                new Object[]{userName}, new RowMapper<String>() {
+//            @Override
+//            public String mapRow(ResultSet resultSet, int i) throws SQLException {
+//                return resultSet.getString("follower");
+//            }
+//        });
+//    }
 
     public String findIfThereAreNewTweets(String userName, String firstTweetOnPage){
         Tweet t = jdbcTemplate.queryForObject("select tweet.timestamp as timestamp, tweet.username as username, tweet.tweettext as tweettext, tweet.tweetid as tweetid " +

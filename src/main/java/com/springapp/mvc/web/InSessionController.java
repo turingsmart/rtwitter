@@ -1,8 +1,10 @@
 package com.springapp.mvc.web;
 
 import com.google.gson.Gson;
+import com.springapp.mvc.model.Users;
 import com.springapp.mvc.service.DbRepositoryService;
 import com.springapp.mvc.model.Tweet;
+import com.springapp.mvc.service.FollowerFollowingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,17 +13,25 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import static java.lang.Math.min;
 
 @Controller
 @RequestMapping("/")
 public class InSessionController {
 
     private final DbRepositoryService dbRepositoryService;
+    private final FollowerFollowingService followerFollowingService;
 
     @Autowired
-    public InSessionController(DbRepositoryService dbRepositoryService) {
+    public InSessionController(DbRepositoryService dbRepositoryService, FollowerFollowingService followerFollowingService) {
         this.dbRepositoryService = dbRepositoryService;
+        this.followerFollowingService = followerFollowingService;
+
     }
 
     @RequestMapping(value = "/home", method = RequestMethod.GET)
@@ -77,22 +87,74 @@ public class InSessionController {
     }
 
 
+//
+//    @RequestMapping(value = "/{username}/following", method = RequestMethod.GET)
+//    public String fetchFollowingList(@PathVariable("username") String username, ModelMap modelMap) {
+//        List<String> users= dbRepositoryService.findFollowedList(username);
+//        modelMap.addAttribute("list", users);
+//        modelMap.addAttribute("username", username);
+//        return "following";
+//    }
 
-    @RequestMapping(value = "/{username}/following", method = RequestMethod.GET)
-    public String fetchFollowingList(@PathVariable("username") String username, ModelMap modelMap) {
-        List<String> users= dbRepositoryService.findFollowedList(username);
-        modelMap.addAttribute("list", users);
-        modelMap.addAttribute("username", username);
-        return "following";
+    //Shashank
+    @RequestMapping(value = "/{username}/following", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public String fetchFollowingList(@PathVariable("username") String username, @RequestParam("followingSeen") String followingSeen, ModelMap modelMap) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String name = authentication.getName();
+        modelMap.addAttribute("loggedinUser",name);
+
+        List<String> followingListOfLoggedinUser=followerFollowingService.fetchFollowingList(name);
+        List<String> followingListOfUser=new LinkedList<String>();
+        if(username.compareTo(name)!=0)
+        {
+            followingListOfUser=followerFollowingService.fetchFollowingList(username);
+            followingListOfLoggedinUser.retainAll(followingListOfUser);
+            followingListOfUser.removeAll(followingListOfLoggedinUser);
+            modelMap.addAttribute("followList",followingListOfUser);
+        }
+        for(String s:followingListOfUser)
+        {
+            followingListOfLoggedinUser.add(s);
+        }
+        followingListOfLoggedinUser.subList(Integer.parseInt(followingSeen)*10, min(Integer.parseInt(followingSeen)*10+10,followingListOfLoggedinUser.size()-1));
+        String json=new Gson().toJson(followingListOfLoggedinUser);
+        System.out.println(json);
+        return json;
     }
 
 
-    @RequestMapping(value = "/{username}/followers", method = RequestMethod.GET)
-    public String fetchFollowersList(@PathVariable("username") String username, ModelMap modelMap) {
-        List<String> users= dbRepositoryService.findFollowersList(username);
-        modelMap.addAttribute("list", users);
+//    @RequestMapping(value = "/{username}/followers", method = RequestMethod.GET)
+//    public String fetchFollowersList(@PathVariable("username") String username, ModelMap modelMap) {
+//        List<String> users= dbRepositoryService.findFollowersList(username);
+//        modelMap.addAttribute("list", users);
+//        modelMap.addAttribute("username", username);
+//        return "followers";
+//    }
+    @RequestMapping(value = "/{username}/followers", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public String fetchFollowersList(@PathVariable("username") String username, @RequestParam("followersSeen") String followersSeen, ModelMap modelMap) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String name = authentication.getName();
+        modelMap.addAttribute("loggedinUser",name);
+
+        List<String> followingListOfLoggedinUser=followerFollowingService.fetchFollowingList(name);
+
+        List<String> followerListOfUser=followerFollowingService.fetchFollowersList(username);
+        followingListOfLoggedinUser.retainAll(followerListOfUser);
+        followerListOfUser.removeAll(followingListOfLoggedinUser);
+        modelMap.addAttribute("followList",followerListOfUser);
+
+        modelMap.addAttribute("unfollowList",followingListOfLoggedinUser);
         modelMap.addAttribute("username", username);
-        return "followers";
+        for(String s:followerListOfUser)
+        {
+            followingListOfLoggedinUser.add(s);
+        }
+        followingListOfLoggedinUser.subList(Integer.parseInt(followersSeen)*10, min(Integer.parseInt(followersSeen)*10+10,followingListOfLoggedinUser.size()-1));
+        String json=new Gson().toJson(followingListOfLoggedinUser);
+        System.out.println(json);
+        return json;
     }
 
     @RequestMapping(value = "/{username}/changeFollowingStatus", method = RequestMethod.GET)
@@ -128,4 +190,52 @@ public class InSessionController {
         dbRepositoryService.postTweet(tweet);
     }
 
+    @RequestMapping(value="/home/search",method = RequestMethod.POST)
+    public  String search(@ModelAttribute("searchString") String searchString,ModelMap modelMap)
+    {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userName = authentication.getName();
+        modelMap.addAttribute("searchString",searchString);
+        modelMap.addAttribute("loggedinUser",userName);
+        return "search";
+    }
+
+    @RequestMapping(value = "/home/searchUser",method=RequestMethod.POST)
+    @ResponseBody
+    public String searchResults(@RequestParam("loggedinUser") String userName, @RequestParam("searchString") String searchString,ModelMap modelMap)
+    {
+        //  System.out.println("here......."+userName +" "+ searchString);
+        List<Users> users=followerFollowingService.findUsersWithName(searchString);
+        //List<Users> users=new LinkedList<Users>();
+        List<String> followingListOfLoggedinUser=followerFollowingService.fetchFollowingList(userName);
+
+        Map<String,Users> mappingOfUsers=new HashMap<String, Users>();
+        List<String> namesOfUsers = new LinkedList<String>();
+        for(Users u:users)
+        {
+            // System.out.println(u.getUsername());
+            namesOfUsers.add(u.getUsername());
+            mappingOfUsers.put(u.getUsername(), u);
+
+        }
+        followingListOfLoggedinUser.retainAll(namesOfUsers);
+        namesOfUsers.removeAll(followingListOfLoggedinUser);
+        List<Users> followList = new LinkedList<Users>();
+        List<Users> unfollowList =new LinkedList<Users>();
+        for(String s:followingListOfLoggedinUser)
+        {
+            System.out.println(s);
+            unfollowList.add(mappingOfUsers.get(s));
+        }
+        modelMap.addAttribute("length",unfollowList.size());
+        System.out.println("here");
+        for(String s:namesOfUsers)
+        {
+            System.out.println(s);
+            unfollowList.add(mappingOfUsers.get(s));
+        }
+        String jsonString = new Gson().toJson(unfollowList);
+        System.out.println(jsonString);
+        return jsonString;
+    }
 }
