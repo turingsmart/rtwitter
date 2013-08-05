@@ -30,6 +30,8 @@ public class Users {
 
     private String dateofjoining;
 
+    private String token;
+
     public String getUsername() {
         return username;
     }
@@ -68,5 +70,13 @@ public class Users {
 
     public void setDateofjoining(String dateofjoining) {
         this.dateofjoining = dateofjoining;
+    }
+
+    public String getToken(){
+        return token;
+    }
+
+    public void setToken(String token){
+        this.token = token;
     }
 }

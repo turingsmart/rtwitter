@@ -16,6 +16,7 @@
         <security:intercept-url pattern="/favicon.ico" access="permitAll"/>
         <security:intercept-url pattern="/*/timeline" access="permitAll"/>
         <security:intercept-url pattern="/static/**" access="permitAll"/>
+        <security:intercept-url pattern="/api/**" access="permitAll"/>
 
         <!--Change this line so that it is not a role based security model-->
 		<!--<security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>-->

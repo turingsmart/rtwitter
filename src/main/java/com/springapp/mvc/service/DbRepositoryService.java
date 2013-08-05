@@ -28,6 +28,7 @@ public class DbRepositoryService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+
     public String changeFollowingStatus(String follower, String followed){
         String isFollowed = jdbcTemplate.queryForObject("select count(*) from following where follower = ? and followed = ?",
                 new Object[]{follower,followed}, String.class);
@@ -69,6 +70,12 @@ public class DbRepositoryService {
         return jdbcTemplate.queryForObject("select * from users where username = ?",
                 new Object[]{username}, new BeanPropertyRowMapper<Users>(Users.class));
 
+    }
+
+    public Users fetchUserByAccessToken(String accessToken){
+        System.out.print("Reaching to find user by accesstoken");
+        return jdbcTemplate.queryForObject("select * from users where token = ?",
+                new Object[]{accessToken}, new BeanPropertyRowMapper<Users>(Users.class));
     }
 
     public List<Tweet> fetchUsersTweets(String username) {

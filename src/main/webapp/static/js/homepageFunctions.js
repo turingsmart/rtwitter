@@ -5,11 +5,17 @@
  * Time: 4:59 PM
  * To change this template use File | Settings | File Templates.
  */
-var tweetSeen = 0;
+
+
+var tweetSeen;
 var userLoggedIn;
 var firstTweetOnPage;
+
+var t = _.template('<div class="well"><div class="pull-left"><a href="/username/timeline"><%= username %></a></div><div class="pull-center"><%= tweettext %></div></div>')  ;
+
 function refreshTweetsAjax(tweetUrl) {
     userLoggedIn = tweetUrl;
+    tweetSeen = 0;
 //    var tweetUrl = "${username}";
     var ext = "/newTweets"
     $.ajax({
@@ -23,11 +29,12 @@ function refreshTweetsAjax(tweetUrl) {
 
             $('#tweetBox').empty();
             for(var i=0; i < data.length; i++){
-                $('#tweetBox').append(
-                    $('<div>').addClass('well')
-                        .append($('<div>').addClass("pull-left").append($('<a>').text(data[i].username).attr("href","/"+data[i].username+"/timeline")))
-                        .append($('<div>').addClass("pull-center").text(data[i].tweettext))
-                );
+                $('#tweetBox').append(t({username: data[i].username, tweettext:data[i].tweettext}));
+//                $('#tweetBox').append(
+//                    $('<div>').addClass('well')
+//                        .append($('<div>').addClass("pull-left").append($('<a>').text(data[i].username).attr("href","/"+data[i].username+"/timeline")))
+//                        .append($('<div>').addClass("pull-center").text(data[i].tweettext))
+//                );
             }
         }
     });
@@ -101,8 +108,6 @@ function generate(type) {
     console.log(type + ' - ' + n.options.id);
     return n;
 }
-
-
 
 
 

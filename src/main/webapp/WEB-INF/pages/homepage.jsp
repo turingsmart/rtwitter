@@ -68,8 +68,17 @@
 
     <!-- themes -->
     <script type="text/javascript" src="/static/js/noty/themes/default.js"></script>
+    <script type="text/javascript" src="/static/js/underscore.js"></script>
+    <script type="text/javascript" src="/static/js/underscore-min.js"></script>
 
     <script src="/static/js/homepageFunctions.js"></script>
+
+
+
+
+    <%--<script type="text/template"  id="tweet-js-template"><div class="well"><div class="pull-left"><a href="/username/timeline"><%= username %></a></div><div class="pull-center">tweettext</div></div></script>;--%>
+    <%--<script type="text/javascript"> var t = _.template($("#tweet-js-template").html()); </script>--%>
+
     <script src="/static/js/followingpageFunctions.js"></script>
     <script src="/static/js/followerspageFunctions.js"></script>
     <%--<script type="text/javascript">$(document).ready(function(){console.log( "ready!" );refreshTweetsAjax("${username}");});</script>--%>
