@@ -3,6 +3,7 @@ package com.springapp.mvc.service;
 import com.springapp.mvc.model.Tweet;
 import com.springapp.mvc.model.Users;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -67,9 +68,14 @@ public class DbRepositoryService {
     }
 
     public Users fetchUser(String username) {
-        return jdbcTemplate.queryForObject("select * from users where username = ?",
+        try{
+            Users u =  jdbcTemplate.queryForObject("select * from users where username = ?",
                 new Object[]{username}, new BeanPropertyRowMapper<Users>(Users.class));
-
+            return u;
+        }
+        catch (EmptyResultDataAccessException e){
+            return null;
+        }
     }
 
     public Users fetchUserByAccessToken(String accessToken){

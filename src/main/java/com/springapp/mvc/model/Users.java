@@ -1,5 +1,6 @@
 package com.springapp.mvc.model;
 
+import com.springapp.mvc.service.usernameExistsConstraint;
 import com.sun.istack.internal.NotNull;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -17,12 +18,13 @@ import javax.validation.constraints.Size;
 public class Users {
 
     @Size(min=6, max=32)
+    @usernameExistsConstraint
     private String username;
 
     @Size(min=6, max=32)
     private String name;
 
-    @NotNull
+    @Size(min=6, max=32)
     private String password;
 
     @NotEmpty @Email

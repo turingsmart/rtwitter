@@ -13,5 +13,8 @@
         <property name="suffix" value=".jsp"/>
     </bean>
 
+    <bean id="validator" class="com.springapp.mvc.service.usernameExistsConstraintValidator">
+    </bean>
+
     <mvc:resources mapping="/static/**" location= "/static/" />
 </beans>

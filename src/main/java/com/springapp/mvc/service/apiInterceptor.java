@@ -33,6 +33,8 @@ public class apiInterceptor implements HandlerInterceptor {
         System.out.println("Inside pre handle");
         System.out.println(request.getHeader("accessToken"));
         Users u = dbRepositoryService.fetchUserByAccessToken(request.getHeader("accessToken"));
+        if(u == null)
+            return false;
         System.out.println("User returned");
         return true;
     }
